@@ -1,0 +1,5 @@
+{"snippet": "this is the beginning\nand a new beginning", "summary": "this is a summary", "label": ["relevant", "irrelevant"], "annotation": ["hallucinated"]}
+{"snippet": "this is a test file 2", "summary": "this is a summary 2", "label": ["relevant", "irrelevant"], "annotation": ["inaccurate", "hallucinated"]}
+{"snippet": "this is a test file 3", "summary": "this is a summary 3", "label": ["relevant", "irrelevant"], "annotation": null}
+{"snippet": "this is a test file 4", "summary": "this is a summary 4", "label": ["relevant", "irrelevant"], "annotation": null}
+{"snippet": "this is the end\nbutnot the end of all", "summary": "this is a summary 5", "label": ["relevant", "irrelevant"], "annotation": ["valid"]}
