@@ -85,16 +85,25 @@ def save_data(file='test_results.jsonl'):
 
 #%% formatting
 def format_snippet(text):
-    return text.replace('this', '**This**').replace('\n', '  \n:male-doctor: ')
+    lines = text.split('\n')
+    lines[::2] = [':male-doctor: '+x.strip() for x in lines[::2]]
+    lines[1::2] = [':hospital: '+x.strip() for x in lines[1::2]]
+    return '  \n'.join(['**Snippet**', ' ']+lines)
 
 
 def format_summary(text):
-    return text
+    return '  \n'.join(['**Summary**', ' ']+[text, ])
 
 
 def display_label(loc):
     label_loc = st.session_state.data_annotation[loc]
     st.session_state.current_annotation = label_loc if label_loc else []
+
+
+def navigate_dispmsg():
+    n = len(st.session_state.data_annotation)
+    loc = st.session_state.data_pointer
+    return f'**Viewing:** {loc+1}/{n} Examples'
 
 
 #%% main
@@ -106,15 +115,17 @@ def main():
     df = st.session_state.data_frame
     loc = st.session_state.data_pointer
 
-    containers = st.columns([0.3, 0.2, 0.2, 0.3, 1])
-    with containers[0]:
-        prev_button = st.button('previous unlabeled', on_click=navigate_data_unlabeled, kwargs=dict(direction='b', limit=df.shape[0]-1))
-    with containers[1]:
-        prev_button = st.button('previous', on_click=navigate_data, kwargs=dict(direction='b', limit=df.shape[0]-1))
-    with containers[2]:
-        next_button = st.button('next', on_click=navigate_data, kwargs=dict(direction='f', limit=df.shape[0]-1))
+    containers = st.columns([0.15, 0.3, 0.4, 0.3, 0.3])
     with containers[3]:
+        prev_button = st.button('prev unlabeled', on_click=navigate_data_unlabeled, kwargs=dict(direction='b', limit=df.shape[0]-1))
+    with containers[0]:
+        prev_button = st.button('prev', on_click=navigate_data, kwargs=dict(direction='b', limit=df.shape[0]-1))
+    with containers[1]:
+        next_button = st.button('next', on_click=navigate_data, kwargs=dict(direction='f', limit=df.shape[0]-1))
+    with containers[4]:
         next_button = st.button('next unlabeled', on_click=navigate_data_unlabeled, kwargs=dict(direction='f', limit=df.shape[0]-1))
+    with containers[2]:
+        st.markdown(navigate_dispmsg())
 
     snippet_container, summary_container = st.columns(2)
     with snippet_container:
@@ -122,10 +133,8 @@ def main():
         snippet_cell = st.markdown(snippet)
     with summary_container:
         summary = format_summary(df.iloc[loc]['summary'])
-        summary_cell = st.text(summary)
+        summary_cell = st.markdown(summary)
     
-    
-
     labelset = ['valid', 'hallucinated', 'inaccurate', 'irrelevant']
     # buttonarray = st.columns(len(labelset))
     # for (label, container) in zip(labelset, buttonarray):
